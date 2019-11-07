@@ -17,6 +17,7 @@ steps:
   environment:
       GOPROXY: https://goproxy.cn
   commands:
+  - (cd assets/webapp && yarn install && yarn build)
   - go run -mod=vendor mage.go generate
   - go run -mod=vendor mage.go build
   when:
