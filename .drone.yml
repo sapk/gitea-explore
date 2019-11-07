@@ -11,6 +11,11 @@ workspace:
   path: src/gitea.com/sapk/explore
 
 steps:
+  - name: fetch-submodule
+    pull: default
+    image: docker:git
+    commands:
+      - git submodule update --init --recursive
   - name: frontend
     pull: always
     image: node
@@ -57,11 +62,12 @@ trigger:
     - "refs/pull/**"
 
 steps:
-  - name: fetch-tags
+  - name: fetch-tags-submodule
     pull: default
     image: docker:git
     commands:
       - git fetch --tags --force
+      - git submodule update --init --recursive
     when:
       event:
         exclude:
