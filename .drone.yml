@@ -11,13 +11,25 @@ workspace:
   path: src/gitea.com/sapk/explore
 
 steps:
+- name: build-frontend
+  pull: always
+  image: node
+  commands:
+  - cd assets/webapp
+  - yarn install
+  - yarn build
+  when:
+    event:
+    - push
+    - tag
+    - pull_request
+
 - name: build
   pull: always
   image: golang:1.13
   environment:
       GOPROXY: https://goproxy.cn
   commands:
-  - (cd assets/webapp && yarn install && yarn build)
   - go run -mod=vendor mage.go generate
   - go run -mod=vendor mage.go build
   when:
