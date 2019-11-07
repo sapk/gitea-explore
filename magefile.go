@@ -136,3 +136,6 @@ func (Webapp) Build() error {
 func (Webapp) Serve() error {
 	return sh.RunV("yarn", "--cwd", "./assets/webapp", "serve", "--emoji")
 }
+
+//TODO lint webapp
+//TODO lint go app

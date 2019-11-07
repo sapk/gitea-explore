@@ -1,0 +1,27 @@
+---
+kind: pipeline
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+workspace:
+  base: /go
+  path: src/gitea.com/sapk/explore
+
+steps:
+- name: build
+  pull: always
+  image: golang:1.13
+  environment:
+      GOPROXY: https://goproxy.cn
+  commands:
+  - go run -mod=vendor mage.go generate
+  - go run -mod=vendor mage.go build
+  when:
+    event:
+    - push
+    - tag
+    - pull_request
+
