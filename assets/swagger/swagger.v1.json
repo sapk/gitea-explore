@@ -1,0 +1,241 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "This documentation describes the Explore Gitea API.",
+    "title": "Explore API.",
+    "version": "1.0.0"
+  },
+  "basePath": "/api",
+  "paths": {
+    "/v1/search": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "summary": "List the repositories found by search",
+        "operationId": "search",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "the requested query",
+            "name": "q",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "Field use to order results (default to stars_count)",
+            "name": "order_by",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "type": "string",
+            "description": "Order to use (default to desc)",
+            "name": "order",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "Current page to return",
+            "name": "page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/SearchResultList"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/v1/servers": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "summary": "List the servers indexed",
+        "operationId": "servers",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/ServerList"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Repository": {
+      "description": "Repository represents a repository",
+      "type": "object",
+      "properties": {
+        "archived": {
+          "description": "archived",
+          "type": "boolean",
+          "x-go-name": "Archived"
+        },
+        "avatar_url": {
+          "description": "avatar URL",
+          "type": "string",
+          "x-go-name": "AvatarURL"
+        },
+        "clone_url": {
+          "description": "clone URL",
+          "type": "string",
+          "x-go-name": "CloneURL"
+        },
+        "created_at": {
+          "description": "created\nFormat: date-time",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Created"
+        },
+        "description": {
+          "description": "description",
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "empty": {
+          "description": "empty",
+          "type": "boolean",
+          "x-go-name": "Empty"
+        },
+        "fetched_at": {
+          "description": "Fetched when retrieved by api",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Fetched"
+        },
+        "fork": {
+          "description": "fork",
+          "type": "boolean",
+          "x-go-name": "Fork"
+        },
+        "forks_count": {
+          "description": "forks",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Forks"
+        },
+        "full_name": {
+          "description": "full name",
+          "type": "string",
+          "x-go-name": "FullName"
+        },
+        "host": {
+          "description": "the source host",
+          "type": "string",
+          "x-go-name": "Host"
+        },
+        "html_url": {
+          "description": "HTML URL //TODO deduplicate by ID",
+          "type": "string",
+          "x-go-name": "HTMLURL"
+        },
+        "mirror": {
+          "description": "mirror",
+          "type": "boolean",
+          "x-go-name": "Mirror"
+        },
+        "name": {
+          "description": "name",
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "open_issues_count": {
+          "description": "open issues",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "OpenIssues"
+        },
+        "original_url": {
+          "description": "original URL",
+          "type": "string",
+          "x-go-name": "OriginalURL"
+        },
+        "size": {
+          "description": "size",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Size"
+        },
+        "stars_count": {
+          "description": "stars",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Stars"
+        },
+        "updated_at": {
+          "description": "updated\nFormat: date-time",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Updated"
+        },
+        "watchers_count": {
+          "description": "watchers",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Watchers"
+        }
+      },
+      "x-go-package": "gitea.com/sapk/explore"
+    },
+    "SearchResult": {
+      "description": "SearchResult respons object",
+      "type": "object",
+      "properties": {
+        "Page": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Repositories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Repository"
+          }
+        },
+        "Total": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "x-go-package": "gitea.com/sapk/explore"
+    }
+  },
+  "responses": {
+    "SearchResultList": {
+      "description": "SearchResultList represent a list of search api result response",
+      "schema": {
+        "$ref": "#/definitions/SearchResult"
+      }
+    },
+    "ServerList": {
+      "description": "ServerList represent a list of server response",
+      "schema": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/definitions/Server"
+        }
+      }
+    }
+  }
+}
