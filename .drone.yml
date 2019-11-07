@@ -11,30 +11,84 @@ workspace:
   path: src/gitea.com/sapk/explore
 
 steps:
-- name: build-frontend
-  pull: always
-  image: node
-  commands:
-  - cd assets/webapp
-  - yarn install
-  - yarn build
-  when:
-    event:
-    - push
-    - tag
-    - pull_request
+  - name: frontend
+    pull: always
+    image: node
+    commands:
+      - cd assets/webapp
+      - yarn install
+      - yarn build
+    when:
+      event:
+        - push
+        - tag
+        - pull_request
 
-- name: build
-  pull: always
-  image: golang:1.13
-  environment:
+  - name: build
+    pull: always
+    image: golang:1.13
+    environment:
       GOPROXY: https://goproxy.cn
-  commands:
-  - go run -mod=vendor mage.go generate
-  - go run -mod=vendor mage.go build
-  when:
-    event:
-    - push
-    - tag
-    - pull_request
+    commands:
+      - go run -mod=vendor mage.go generate
+      - go run -mod=vendor mage.go build
+    when:
+      event:
+        - push
+        - tag
+        - pull_request
 
+---
+kind: pipeline
+name: docker-linux-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+workspace:
+  base: /go
+  path: src/gitea.com/sapk/explore
+
+trigger:
+  ref:
+    - refs/heads/master
+    - "refs/tags/**"
+    - "refs/pull/**"
+
+steps:
+  - name: fetch-tags
+    pull: default
+    image: docker:git
+    commands:
+      - git fetch --tags --force
+    when:
+      event:
+        exclude:
+          - pull_request
+
+  - name: dryrun
+    pull: always
+    image: plugins/docker:linux-amd64
+    settings:
+      dry_run: true
+      repo: sapk/explore
+      tags: linux-amd64
+    when:
+      event:
+        - pull_request
+
+  - name: publish
+    pull: always
+    image: plugins/docker:linux-amd64
+    settings:
+      dry_run: true
+      repo: sapk/explore
+      password:
+        from_secret: docker_password
+      username:
+        from_secret: docker_username
+    when:
+      event:
+        exclude:
+          - pull_request
